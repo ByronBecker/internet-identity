@@ -362,6 +362,10 @@ export class DemoAppView extends View {
     await this.browser.$("#signinBtn").click();
   }
 
+  async legacySignin(): Promise<void> {
+    await this.browser.$("#legacySigninBtn").click();
+  }
+
   async setMaxTimeToLive(mttl: BigInt): Promise<void> {
     await fillText(this.browser, "maxTimeToLive", String(mttl));
   }

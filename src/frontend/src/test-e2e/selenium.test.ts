@@ -122,6 +122,34 @@ test("Log into client application, after registration", async () => {
   });
 }, 300_000);
 
+test("Log into client application, after registration (legacy API)", async () => {
+  await runInBrowser(async (browser: WebdriverIO.Browser) => {
+    await addVirtualAuthenticator(browser);
+    const demoAppView = new DemoAppView(browser);
+    await demoAppView.open(DEMO_APP_URL, II_URL);
+    await demoAppView.waitForDisplay();
+    expect(await demoAppView.getPrincipal()).toBe("2vxsx-fae");
+    await demoAppView.legacySignin();
+    await switchToPopup(browser);
+    await FLOWS.registerNewIdentity(DEVICE_NAME1, browser);
+    const authorizeAppView = new AuthorizeAppView(browser);
+    await authorizeAppView.waitForDisplay();
+    await authorizeAppView.confirm();
+    await waitToClose(browser);
+    await demoAppView.waitForDisplay();
+    const principal = await demoAppView.getPrincipal();
+    expect(principal).not.toBe("2vxsx-fae");
+
+    expect(await demoAppView.whoami(REPLICA_URL, WHOAMI_CANISTER)).toBe(
+      principal
+    );
+
+    // default value
+    const exp = await browser.$("#expiration").getText();
+    expect(Number(exp) / (30 * 60_000_000_000)).toBeCloseTo(1);
+  });
+}, 300_000);
+
 test("Delegation maxTimeToLive: 1 min", async () => {
   await runInBrowser(async (browser: WebdriverIO.Browser) => {
     await addVirtualAuthenticator(browser);
