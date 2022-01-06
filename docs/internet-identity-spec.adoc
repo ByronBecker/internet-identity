@@ -123,16 +123,16 @@ where `msg` is a value with of type
 
  interface InternetIdentityAuthRequest {
    kind: "authorize-client";
-   sessionPublicKey: Uint8Array;
+   sessionPublicKey: Uint8Array; // TODO: what encoding is this?
    maxTimeToLive?: bigint;
  }
 
 where
 
-* the `sessionPublicKey` contains the public key of the session key pair.
+* the `sessionPublicKey` contains the public key of the session key pair. NOTE: can be anything supported by IC
 * the `maxTimeToLive`, if present, indicates the desired time span (in nanoseconds) until the requested delegation should expire. The Identity Provider frontend is free to set an earlier expiry time, but should not create a larger.
 --
-6. Now the client application window expects a message back, with data `event`.
+6. Now the client application window expects a message back, with data `event`. TODO: WRONG! `.origin` is on the `message`, not `message.data`.
 7. If `event.origin !== "https://identity.ic0.app"`, ignore this message.
 8. The `event.data` value is a JS object with the following type:
 +
